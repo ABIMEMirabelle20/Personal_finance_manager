@@ -28,6 +28,7 @@
       <span id="current-month-label"></span>
     </div>
   </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
   <!-- Main content -->
   <main class="main">
@@ -43,18 +44,22 @@
     <section id="view-dashboard" class="view active">
       <div class="cards-grid">
         <div class="stat-card income">
+          <span class="stat-icon">💵</span>
           <span class="stat-label">Revenus du mois</span>
           <span class="stat-value" id="stat-income">0 €</span>
         </div>
         <div class="stat-card expense">
+          <span class="stat-icon">💸</span>
           <span class="stat-label">Dépenses du mois</span>
           <span class="stat-value" id="stat-expenses">0 €</span>
         </div>
         <div class="stat-card balance">
+          <span class="stat-icon">⚖️</span>
           <span class="stat-label">Solde disponible</span>
           <span class="stat-value" id="stat-balance">0 €</span>
         </div>
         <div class="stat-card budget">
+          <span class="stat-icon">🎯</span>
           <span class="stat-label">Budget utilisé</span>
           <span class="stat-value" id="stat-budget-percent">—</span>
           <div class="progress-bar"><div class="progress-fill" id="budget-progress-fill"></div></div>

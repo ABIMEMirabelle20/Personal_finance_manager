@@ -4,10 +4,18 @@
  * changement de mois / création / édition / suppression.
  */
 
-const state = {
-  currentMonth: new Date().toISOString().slice(0, 7), // "YYYY-MM"
-  allTransactions: [],
-};
+/**
+ * Calcule le dernier jour réel d'un mois (ex : 30 pour septembre, 28/29 pour
+ * février) au lieu de supposer "31" pour tous les mois — sinon une date
+ * invalide comme "2026-09-31" est rejetée par le backend (erreur 422).
+ */
+function lastDayOfMonth(monthStr) {
+  const [year, month] = monthStr.split("-").map(Number);
+  const date = new Date(year, month, 0); // jour 0 du mois suivant = dernier jour du mois actuel
+  return date.toISOString().slice(0, 10);
+}
+
+const state = { currentMonth: new Date().toISOString().slice(0, 7), allTransactions: [] };
 
 const VIEW_TITLES = {
   dashboard: "Tableau de bord",
@@ -33,6 +41,7 @@ function showView(view) {
 
   document.getElementById("view-title").textContent = VIEW_TITLES[view];
   document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebar-overlay").classList.remove("visible");
 }
 
 function bindNavigation() {
@@ -40,8 +49,17 @@ function bindNavigation() {
     link.addEventListener("click", () => showView(link.dataset.view));
   });
 
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+
   document.getElementById("menu-toggle").addEventListener("click", () => {
-    document.getElementById("sidebar").classList.toggle("open");
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("visible");
+  });
+
+  overlay.addEventListener("click", () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("visible");
   });
 }
 
@@ -136,7 +154,7 @@ async function refreshAll() {
       api.getMonthlyEvolution(6),
       api.listTransactions({
         date_from: `${state.currentMonth}-01`,
-        date_to: `${state.currentMonth}-31`,
+        date_to: lastDayOfMonth(state.currentMonth),
       }),
     ]);
 
