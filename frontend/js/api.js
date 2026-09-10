@@ -3,7 +3,7 @@
  * Centraliser tous les appels fetch() ici permet de changer l'URL de base
  * en un seul endroit et de gérer les erreurs de façon cohérente.
  */
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "https://personal-finance-manager-api-krsh.onrender.com";
 
 const CATEGORIES = [
   { value: "alimentation", label: "Alimentation" },
