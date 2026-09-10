@@ -17,6 +17,31 @@ function lastDayOfMonth(monthStr) {
 
 const state = { currentMonth: new Date().toISOString().slice(0, 7), allTransactions: [] };
 
+/**
+ * Mode sombre : appliqué via un attribut data-theme sur <html>, dont
+ * dépendent toutes les variables CSS de couleur (voir style.css).
+ * Le choix est mémorisé dans localStorage pour être conservé d'une
+ * visite à l'autre.
+ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  document.getElementById("theme-toggle").textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
+function initTheme() {
+  const saved = localStorage.getItem("pfm-theme");
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(saved || (prefersDark ? "dark" : "light"));
+}
+
+function bindThemeToggle() {
+  document.getElementById("theme-toggle").addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem("pfm-theme", next);
+  });
+}
+
 const VIEW_TITLES = {
   dashboard: "Tableau de bord",
   transactions: "Transactions",
@@ -170,6 +195,8 @@ async function refreshAll() {
 }
 
 async function init() {
+  initTheme();
+  bindThemeToggle();
   populateCategorySelects();
   bindNavigation();
   bindMonthPicker();
