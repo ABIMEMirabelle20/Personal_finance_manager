@@ -10,7 +10,7 @@ function populateCategorySelects() {
     if (!select) return;
     const keepFirst = select.id === "filter-category";
     const options = CATEGORIES.filter((c) => (keepFirst ? true : c.value !== "revenu"))
-      .map((c) => `<option value="${c.value}">${c.label}</option>`)
+      .map((c) => `<option value="${c.value}">${c.icon} ${c.label}</option>`)
       .join("");
     select.insertAdjacentHTML("beforeend", options);
   });
@@ -22,6 +22,10 @@ function formatAmount(amount) {
 
 function categoryLabel(value) {
   return CATEGORIES.find((c) => c.value === value)?.label || value;
+}
+
+function categoryIcon(value) {
+  return CATEGORIES.find((c) => c.value === value)?.icon || "💳";
 }
 
 function renderTransactionsTable(containerId, transactions, { withActions = true } = {}) {
@@ -44,7 +48,12 @@ function renderTransactionsTable(containerId, transactions, { withActions = true
       return `
         <tr>
           <td>${t.date}</td>
-          <td>${t.description || "—"}</td>
+          <td>
+            <div class="tx-cell">
+              <span class="tx-icon">${categoryIcon(t.category)}</span>
+              <span>${t.description || categoryLabel(t.category)}</span>
+            </div>
+          </td>
           <td>${categoryLabel(t.category)}</td>
           <td class="${amountClass}">${sign} ${formatAmount(t.amount)}</td>
           ${actions}

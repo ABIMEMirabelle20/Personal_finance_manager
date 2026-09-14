@@ -3,18 +3,18 @@
  * Centraliser tous les appels fetch() ici permet de changer l'URL de base
  * en un seul endroit et de gérer les erreurs de façon cohérente.
  */
-const API_BASE_URL = "https://personal-finance-manager-api-krsh.onrender.com/api";
+const API_BASE_URL = "http://localhost:8000/api";
 
 const CATEGORIES = [
-  { value: "alimentation", label: "Alimentation" },
-  { value: "logement", label: "Logement" },
-  { value: "transport", label: "Transport" },
-  { value: "etudes", label: "Études" },
-  { value: "loisirs", label: "Loisirs" },
-  { value: "sante", label: "Santé" },
-  { value: "abonnements", label: "Abonnements" },
-  { value: "autres", label: "Autres" },
-  { value: "revenu", label: "Revenu" },
+  { value: "alimentation", label: "Alimentation", icon: "🍔" },
+  { value: "logement", label: "Logement", icon: "🏠" },
+  { value: "transport", label: "Transport", icon: "🚌" },
+  { value: "etudes", label: "Études", icon: "📚" },
+  { value: "loisirs", label: "Loisirs", icon: "🎮" },
+  { value: "sante", label: "Santé", icon: "💊" },
+  { value: "abonnements", label: "Abonnements", icon: "📱" },
+  { value: "autres", label: "Autres", icon: "📦" },
+  { value: "revenu", label: "Revenu", icon: "💰" },
 ];
 
 async function apiRequest(path, options = {}) {

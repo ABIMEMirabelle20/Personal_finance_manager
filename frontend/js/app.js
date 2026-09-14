@@ -56,6 +56,63 @@ function showToast(message, kind = "success") {
   setTimeout(() => toast.classList.add("hidden"), 2800);
 }
 
+/**
+ * Message d'accueil qui s'adapte à l'heure de la journée, et mise à
+ * jour de la carte "hero" en haut du tableau de bord (solde + résumé).
+ */
+function greetingText() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Bonjour";
+  if (hour < 18) return "Bon après-midi";
+  return "Bonsoir";
+}
+
+function updateHero(summary) {
+  document.getElementById("hero-greeting").textContent = `${greetingText()} 👋`;
+  const [year, month] = state.currentMonth.split("-");
+  const label = new Date(`${year}-${month}-01`).toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  document.getElementById("hero-subtitle").textContent = `Voici ton résumé de ${label}`;
+  document.getElementById("hero-balance").textContent = formatAmount(summary.balance);
+}
+
+/**
+ * Compare le mois affiché au mois précédent, à partir des données déjà
+ * récupérées pour le graphique d'évolution (pas d'appel API en plus).
+ * Retourne null si le mois précédent n'est pas présent dans les données.
+ */
+function computeMonthComparison(evolution, currentMonth) {
+  const idx = evolution.findIndex((p) => p.month === currentMonth);
+  if (idx <= 0) return null;
+
+  const current = evolution[idx];
+  const previous = evolution[idx - 1];
+  const pctChange = (curr, prev) => (prev === 0 ? null : Math.round(((curr - prev) / prev) * 1000) / 10);
+
+  return {
+    incomeChange: pctChange(current.income, previous.income),
+    expensesChange: pctChange(current.expenses, previous.expenses),
+  };
+}
+
+/**
+ * Affiche un badge de tendance ("▲ 12% vs mois dernier"). goodDirection
+ * précise si une hausse est une bonne nouvelle ("up", ex: revenus) ou
+ * une mauvaise nouvelle ("down", ex: dépenses) pour choisir la couleur.
+ */
+function renderTrendBadge(elementId, changePercent, goodDirection) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  if (changePercent === null || changePercent === undefined) {
+    el.textContent = "";
+    el.className = "trend-badge hidden";
+    return;
+  }
+  const isUp = changePercent >= 0;
+  const isGood = goodDirection === "up" ? isUp : !isUp;
+  el.textContent = `${isUp ? "▲" : "▼"} ${Math.abs(changePercent)}% vs mois dernier`;
+  el.className = `trend-badge ${isGood ? "positive" : "negative"}`;
+}
+
 function showView(view) {
   document.querySelectorAll(".view").forEach((el) => el.classList.remove("active"));
   document.getElementById(`view-${view}`).classList.add("active");
@@ -122,9 +179,14 @@ function bindBudgetForm() {
 }
 
 async function refreshDashboard(summary, breakdown, evolution) {
+  updateHero(summary);
+
   document.getElementById("stat-income").textContent = formatAmount(summary.total_income);
   document.getElementById("stat-expenses").textContent = formatAmount(summary.total_expenses);
-  document.getElementById("stat-balance").textContent = formatAmount(summary.balance);
+
+  const comparison = computeMonthComparison(evolution, state.currentMonth);
+  renderTrendBadge("income-trend", comparison?.incomeChange, "up");
+  renderTrendBadge("expenses-trend", comparison?.expensesChange, "down");
 
   const percentLabel = document.getElementById("stat-budget-percent");
   const fill = document.getElementById("budget-progress-fill");
@@ -147,6 +209,7 @@ async function refreshDashboard(summary, breakdown, evolution) {
   }
 
   renderEvolutionChart("chart-evolution", evolution);
+  renderCategoryProgressList("category-progress-list", breakdown);
 
   const recent = state.allTransactions.slice(0, 5);
   renderTransactionsTable("recent-transactions", recent, { withActions: false });

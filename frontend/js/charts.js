@@ -58,6 +58,7 @@ function renderCategoryChart(containerId, breakdown) {
       return `
         <div class="legend-item">
           <span class="legend-dot" style="background:${color}"></span>
+          <span class="legend-icon">${categoryIcon(item.category)}</span>
           <span>${categoryLabel(item.category)}</span>
           <span class="legend-value">${item.percent}%</span>
         </div>`;
@@ -71,6 +72,42 @@ function renderCategoryChart(containerId, breakdown) {
       </svg>
       <div class="donut-legend">${legend}</div>
     </div>`;
+}
+
+/**
+ * Liste "détail par catégorie" : icône + libellé + montant + barre de
+ * progression horizontale, proportionnelle au poids de chaque catégorie
+ * dans le total des dépenses du mois. Complète le donut avec une lecture
+ * plus précise catégorie par catégorie.
+ */
+function renderCategoryProgressList(containerId, breakdown) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!breakdown.length) {
+    el.innerHTML = `<p class="empty-msg">Aucune dépense ce mois-ci.</p>`;
+    return;
+  }
+
+  const rows = breakdown
+    .map((item) => {
+      const color = CATEGORY_COLORS[item.category] || "#8b949e";
+      return `
+        <div class="category-row">
+          <span class="category-row-icon" style="background:${color}22; color:${color}">${categoryIcon(item.category)}</span>
+          <div class="category-row-main">
+            <div class="category-row-top">
+              <span>${categoryLabel(item.category)}</span>
+              <span class="category-row-amount">${item.total.toFixed(2)} €</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${item.percent}%; background:${color}"></div>
+            </div>
+          </div>
+        </div>`;
+    })
+    .join("");
+
+  el.innerHTML = rows;
 }
 
 /**

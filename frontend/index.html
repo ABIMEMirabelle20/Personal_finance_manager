@@ -43,21 +43,29 @@
 
     <!-- DASHBOARD -->
     <section id="view-dashboard" class="view active">
+      <div class="hero-card">
+        <div class="hero-text">
+          <p class="hero-greeting" id="hero-greeting">Bonjour 👋</p>
+          <p class="hero-subtitle" id="hero-subtitle">Voici ton résumé du mois</p>
+        </div>
+        <div class="hero-balance-block">
+          <span class="hero-balance-label">Solde disponible</span>
+          <span class="hero-balance" id="hero-balance">0 €</span>
+        </div>
+      </div>
+
       <div class="cards-grid">
         <div class="stat-card income">
           <span class="stat-icon">💵</span>
           <span class="stat-label">Revenus du mois</span>
           <span class="stat-value" id="stat-income">0 €</span>
+          <span class="trend-badge hidden" id="income-trend"></span>
         </div>
         <div class="stat-card expense">
           <span class="stat-icon">💸</span>
           <span class="stat-label">Dépenses du mois</span>
           <span class="stat-value" id="stat-expenses">0 €</span>
-        </div>
-        <div class="stat-card balance">
-          <span class="stat-icon">⚖️</span>
-          <span class="stat-label">Solde disponible</span>
-          <span class="stat-value" id="stat-balance">0 €</span>
+          <span class="trend-badge hidden" id="expenses-trend"></span>
         </div>
         <div class="stat-card budget">
           <span class="stat-icon">🎯</span>
@@ -77,6 +85,11 @@
           <h2>Évolution mensuelle</h2>
           <div id="chart-evolution" class="chart-container"></div>
         </div>
+      </div>
+
+      <div class="panel">
+        <h2>Détail par catégorie</h2>
+        <div id="category-progress-list"></div>
       </div>
 
       <div class="panel">
